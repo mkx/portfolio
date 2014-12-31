@@ -1,0 +1,20 @@
+<div class="container" ng-controller="SheetsCtrl">
+    <p>Select a spreadsheet as data source for your portfolio.</p>
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Updated</th>
+            </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="sheet in sheets">
+            <td><a ng-click="setSheetContentSrc(sheet.content._src)">{{sheet.title}}</a></td>
+            <td><a href="mailto:{{sheet.author.email}}">{{sheet.author.name}}</a></td>
+            <td>{{sheet.updated}}</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+

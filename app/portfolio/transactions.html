@@ -1,0 +1,33 @@
+<table class="table">
+    <thead>
+        
+    </thead>
+    <tbody>
+        <tr ng-repeat="transaction in transactions | orderBy:valuta">
+            <td>
+                {{transaction.valuta | momentCalendar}}
+            </td>
+            <td>
+                {{transaction.execution | momentCalendar}}
+            </td>
+            <td>
+                {{transaction.value}}
+            </td>
+            <td>
+                {{transaction.currency}} {{transaction.price}}
+            </td>
+            <td>
+                {{transaction.label}}
+            </td>
+            <td>
+                {{transaction.symbol}}
+            </td>
+            <td>
+                {{transaction.stocks}}
+            </td>
+            <td>
+                {{transaction.type}}
+            </td>
+        </tr>
+    </tbody>
+</table>

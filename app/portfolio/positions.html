@@ -1,0 +1,24 @@
+<table class="table">
+    <thead>
+        
+    </thead>
+    <tbody>
+        <tr ng-repeat="position in positions">
+            <td>
+                {{position.value | bigNum:2 }}
+            </td>
+            <td>
+                {{position.symbol}}
+            </td>
+            <td>
+                {{position.stocks | bigNum:4 }}
+            </td>
+            <td>
+                {{position.lastTradingPrice | bigNum:2 }}
+            </td>
+            <td>
+                {{position.currentValue | bigNum:2 }}
+            </td>
+         </tr>
+    </tbody>
+</table>
