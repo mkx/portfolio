@@ -9,15 +9,8 @@ angular.module('portfolioApp.portfolio', [
                         $stateProvider
                         .state('portfolio', {
                             url: '/portfolio',
-                            views: {
-                                '': {
-                                    templateUrl: 'portfolio/portfolio.html',
-                                    controller: 'PortfolioCtrl'
-                                },
-                                'portfolioTabs': {
-                                    template: 'Test'
-                                }
-                            }
+                            templateUrl: 'portfolio/portfolio.html',
+                            controller: 'PortfolioCtrl'
                         })
                         .state('portfolio.transactions', {
                             url: '/transactions',
@@ -26,6 +19,11 @@ angular.module('portfolioApp.portfolio', [
                         .state('portfolio.positions', {
                             url: '/positions',
                             templateUrl: 'portfolio/positions.html'
+                        })
+                        .state('portfolio.position', {
+                            url: '/:positionId',
+                            templateUrl: 'portfolio/position.html',
+                            controller: 'PortfolioPositionCtrl'
                         });
                     }])
         .controller('PortfolioCtrl',
@@ -121,9 +119,17 @@ angular.module('portfolioApp.portfolio', [
                                                 return Big(0);
                                             }
                                             var val = number.toString();
-                                            if (val.indexOf(',') !== -1 &&
-                                                    val.indexOf('.') === -1) {
+                                            var commaAt = val.indexOf(',');
+                                            var pointAt = val.indexOf('.');
+                                            if ( commaAt !== -1 &&
+                                                    pointAt === -1) {
                                                 // simple conversion from German to US
+                                                val = val.replace(',', '.');
+                                            } else if (commaAt !== -1 &&
+                                                    pointAt !== -1 &&
+                                                    pointAt < commaAt) {
+                                                // 'tausender-trennzeichen' 1.000,00
+                                                val = val.replace('.', '');
                                                 val = val.replace(',', '.');
                                             }
                                             var regex = new RegExp("[-0-9.]+");
@@ -223,6 +229,10 @@ angular.module('portfolioApp.portfolio', [
                                         $scope.positions[i].lastTradingPrice.times(
                                         $scope.positions[i].stocks
                                         );
+                                    var p = $scope.positions[i];
+                                    $scope.positions[i].performance = 
+                                            p.currentValue.minus(p.value).div(p.value).times(100);
+                                
                                     totalPrice = 
                                             totalPrice.plus($scope.positions[i].currentValue);
                                 } else {
@@ -264,4 +274,87 @@ angular.module('portfolioApp.portfolio', [
                                 $scope.yahooTriggered = true;
                             }
                         };
+                   }])
+        .controller('PortfolioPositionCtrl',
+                ['$scope', '$state', '$stateParams', '$http',
+                    function ($scope, $state, $stateParams, $http) {
+                        if (!$scope.positions) {
+                            $state.go('portfolio');
+                            return;
+                        }
+                        
+                        $scope.position = undefined;
+                        
+                        var len = $scope.positions.length;
+                        for (var i=0; i<len; i++) {
+                            if ($scope.positions[i].symbol === $stateParams.positionId) {
+                                $scope.position = $scope.positions[i];
+                                $scope.symbol = $stateParams.positionId;
+                                break;
+                            }
+                        }
+                        
+                        if (!$scope.position) {
+                            $state.go('portfolio');
+                            return;
+                        }
+                        
+                        $scope.filteredTransactions = Array();
+                        $scope.filteredEarnings = Array();
+                        var oldest = moment();
+                        len = $scope.transactions.length;
+                        for (var i=0; i<len; i++) {
+                            if ($scope.transactions[i].symbol === $scope.symbol) {
+                                if ($scope.transactions[i].type === "BUY") {
+                                    $scope.filteredTransactions.push($scope.transactions[i]);
+                                } else if ($scope.transactions[i].type === "Kupon") {
+                                    $scope.filteredEarnings.push($scope.transactions[i]);
+                                }
+                                if ($scope.transactions[i].valuta &&
+                                        $scope.transactions[i].valuta.isBefore(oldest)) {
+                                    oldest = $scope.transactions[i].valuta;
+                                }
+                            }
+                        }
+
+                        // load chart data
+                        var yahooSymbol = $scope.mappingSymbolYahoo[$scope.symbol];
+                        if (yahooSymbol) {
+                            var endDate = moment().format('YYYY-MM-DD');
+                            var startDate = oldest.format('YYYY-MM-DD');
+                            var config = {
+                                url: 'https://query.yahooapis.com/v1/public/yql?'+
+                                        'q=select%20*%20from%20yahoo.finance.historicaldata%20where%20symbol%20%3D%20%22'
+                                        +yahooSymbol+
+                                        '%22%20and%20startDate%20%3D%20%22'
+                                        +startDate+
+                                        '%22%20and%20endDate%20%3D%20%22'
+                                        +endDate+ 
+                                        '%22&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys&callback=JSON_CALLBACK',
+                                method: 'JSONP'
+                            };
+                            $http(config).success(function (data) {
+                                var quote = data.query.results.quote;
+                                $scope.chartData = quote;
+                                d3plus.viz()
+                                        .container("#chart")
+                                        .data(quote)
+                                        .type("line")
+                                        .id("Symbol")
+                                        .text("Adj_Close")
+                                        .y(function(d) {
+                                            return parseFloat(d.Adj_Close);
+                                        })
+                                        .x({
+                                            grid: false,
+                                            label: "Date",
+                                            value: "Date"
+                                        })
+                                        .time("Date")
+                                        .draw();
+                            }).error(function (data, status, headers, config) {
+                                console.log('Error: ' + status);
+                            });
+                        }
+                        
                     }]);

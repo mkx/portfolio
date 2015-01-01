@@ -1,1 +1,75 @@
-<div>TODO write content</div>
+<div class="page-header">
+    <h1>
+        {{position.quote.Name}}
+        <small>
+            {{position.stocks | bigNum}} of {{position.symbol}}
+        </small>
+    </h1>
+</div>
+<div class="row">
+    <div class="col-md-4">
+        <p>Value: {{position.value | bigNum:2 }}</p>
+        <p>Current value: {{position.currentValue | bigNum:2 }}</p>
+        <p>Stocks: {{position.stocks | bigNum:4 }}</p>
+        <p>Current price: {{position.lastTradingPrice | bigNum:2}}</p>
+    </div>
+    <div class="col-md-2">
+        <p class="well">{{position.performance | bigNum:2}}</p>
+    </div>
+    <div class="col-md-6">
+        <div id="chart" style="height: 150px" class="img-responsive">
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-8">
+        <table class="table table-condensed table-striped">
+            <caption>Transactions</caption>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Stocks</th>
+                    <th>Price</th>
+                    <th>Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="transaction in filteredTransactions">
+                    <td>
+                        {{transaction.valuta | momentFromNow }}
+                    </td>
+                    <td>
+                        {{transaction.stocks | bigNum }}
+                    </td>
+                    <td>
+                        {{transaction.price | bigNum:2 }}
+                    </td>
+                    <td>
+                        {{transaction.value | bigNum:2 }}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="col-md-4">
+        <table class="table table-condensed table-striped">
+            <caption>Earnings</caption>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="earning in filteredEarnings">
+                    <td>
+                        {{earning.valuta | momentFromNow }}
+                    </td>
+                    <td>
+                        {{earning.value | bigNum:2 }}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
