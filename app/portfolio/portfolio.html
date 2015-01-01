@@ -35,8 +35,8 @@
     <div ui-view>
         <div class="row">
             <div class="col-md-8">
-                <p>Value: {{portfolio.value | bigNum:2 }}</p>
-                <p>Current price: {{portfolio.price | bigNum:2 }}</p>
+                <p>Value: {{portfolio.costs | bigNum:2 }}</p>
+                <p>Current price: {{portfolio.value | bigNum:2 }}</p>
             </div>
             <div class="col-md-4 well">
                 <p>{{portfolio.performance | bigNum:2}}</p>
@@ -45,7 +45,7 @@
         
        
         <div>
-            <p>{{yahooTriggered}}, {{worksheetsLoaded}}</p>
+            <p>{{yahooTriggered}}, {{sheets.worksheetsLoaded}}/{{sheets.worksheetsFound}}</p>
         </div>
     </div>
     

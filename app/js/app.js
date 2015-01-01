@@ -19,5 +19,7 @@ portfolioApp.config(
 
       $urlRouterProvider.otherwise('/');
               
-  }]);
-
+  }])
+      .value('authorizedState', 'portfolio')
+      .value('unauthorizedState', 'unauthorized');
+ 
