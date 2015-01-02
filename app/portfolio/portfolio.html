@@ -34,10 +34,22 @@
 <div class="container">
     <div ui-view>
         <div class="row">
-            <div class="col-md-8">
-                <p>Value: {{portfolio.costs | bigNum:2 }}</p>
-                <p>Current price: {{portfolio.value | bigNum:2 }}</p>
+            <div class="col-md-4">
+                <p>
+                    Costs: {{portfolio.costs | bigNum:2 }}<br>
+                    <small>Costs of shares without current quote:
+                        {{portfolio.costsWithoutValue | bigNum:2 }}<br>
+                        Total costs: {{portfolio.costsTotal| bigNum:2 }}
+                    </small>
+                </p>
+                <p>Current value: {{portfolio.value | bigNum:2 }}</p>
             </div>
+            <div class="col-md-8">
+                <d3plusvis val="portfolio.chartData">
+                </d3plusvis>
+            </div>
+        </div>
+        <div class="row">
             <div class="col-md-4 well">
                 <p>{{portfolio.performance | bigNum:2}}</p>
             </div>

@@ -69,129 +69,63 @@ angular.module('portfolioApp.portfolio', [
                             $scope.$storage.sheetContentSrc = $rootScope.sheetContentSrc;
                         }
                         
-                        $scope.positions = new Array();
-                        $scope.transactions = new Array();
+                        $scope.positions = portfolio.getPositions();
                         $scope.portfolio = portfolio;
                         
-                        $scope.yahooTriggered = false;
-
+                        $scope.orderProp = function(p) {
+                            if (p.performance) {
+                                return parseFloat(p.performance.toString());
+                            } else {
+                                return p.performance;
+                            }
+                        };
+                        
                         spreadsheetService.loadSpreadsheet($rootScope.sheetContentSrc);
                         $scope.sheets = spreadsheetService.data;
                         
-                        // start yahoo interval
-                        var yahooLoader;
+                        //$scope.chartdata = 'YERER'; //portfolio.chartData;
                         
-                        if (!angular.isDefined(yahooLoader)) {
-                            yahooLoader = $interval(function() {
-                                $scope.queryYahoo();
-                            }, 500 /*ms*/);
-                        }
+
                         
-                        $scope.stopYahoo = function() {
-                            if (angular.isDefined(yahooLoader)) {
-                                $interval.cancel(yahooLoader);
-                                yahooLoader = undefined;
-                            }
-                        };
-                        
-                        $scope.$on('$destroy', function() {
-                            $scope.stopYahoo();
-                        });
-                        
-                        // applies yahoo stock data to position
-                        var updatePosition = function(quote) {
-                            var symbol = yahooService.mapSymbol(quote.symbol);
-                            portfolio.updateQuoteYahoo(symbol, quote);
-                        };                        
-                        
-                        $scope.queryYahoo = function() {
-                            if ($scope.yahooTriggered) {
-                                $scope.stopYahoo();
-                                return;
-                            }
-                            
-                            if ($scope.sheets.worksheetsFound > 0 &&
-                                    $scope.sheets.worksheetsFound === $scope.sheets.worksheetsLoaded) {
-                                // start query to yahoo
-                                var symbols = portfolio.getSymbols();
-                                var len = symbols.length;
-                                var yahooSymbols = Array();
-                                for (var i = 0; i < len; i++) {
-                                    var yahooSymbol = yahooService.mapYahoo(symbols[i]);
-                                    if (yahooSymbol) {
-                                        yahooSymbols.push(yahooSymbol);
-                                    }
-                                }
-                                if (yahooSymbols.length === 0) {
-                                    // retry later
-                                    return ;
-                                }
-                                yahooService.getQuotes(yahooSymbols).success(function (data) {
-                                    var quote = data.query.results.quote;
-                                    for (var i=quote.length-1; i>=0; i--) {
-                                        updatePosition(quote[i]);
-                                    }
-                                }).error(function (data, status, headers, config) {
-                                    console.log('Error: ' + status);
-                                });
-                                
-                                $scope.yahooTriggered = true;
-                                $scope.stopYahoo();
-                            }
-                        };
                    }])
         .controller('PortfolioPositionCtrl',
-                ['$scope', '$state', '$stateParams', '$http', 'gapiService', 'yahooService',
-                    function ($scope, $state, $stateParams, $http, gapiService, yahooService) {
-                        if (!$scope.positions) {
-                            $state.go('portfolio');
-                            return;
-                        }
+                [
+                    '$scope',
+                    '$state',
+                    '$stateParams',
+                    '$http',
+                    'gapiService',
+                    'yahooService',
+                    'portfolio',
+                    function (
+                            $scope,
+                            $state,
+                            $stateParams,
+                            $http,
+                            gapiService,
+                            yahooService,
+                            portfolio) {
                         
-                        $scope.position = undefined;
-                        
-                        var len = $scope.positions.length;
-                        for (var i=0; i<len; i++) {
-                            if ($scope.positions[i].symbol === $stateParams.positionId) {
-                                $scope.position = $scope.positions[i];
-                                $scope.symbol = $stateParams.positionId;
-                                break;
-                            }
-                        }
+                        $scope.positions = portfolio.getPositions();
+                        $scope.portfolio = portfolio;
+
+                        $scope.position = portfolio.findPosition($stateParams.positionId);
                         
                         if (!$scope.position) {
                             $state.go('portfolio');
                             return;
                         }
+                        $scope.symbol = $scope.position.symbol;
                         
-                        $scope.filteredTransactions = Array();
-                        $scope.filteredEarnings = Array();
-                        var oldest = moment();
-                        len = $scope.transactions.length;
-                        for (var i=0; i<len; i++) {
-                            if ($scope.transactions[i].symbol === $scope.symbol) {
-                                if ($scope.transactions[i].type === "BUY") {
-                                    $scope.filteredTransactions.push($scope.transactions[i]);
-                                } else if ($scope.transactions[i].type === "Kupon") {
-                                    $scope.filteredEarnings.push($scope.transactions[i]);
-                                }
-                                if ($scope.transactions[i].valuta &&
-                                        $scope.transactions[i].valuta.isBefore(oldest)) {
-                                    oldest = $scope.transactions[i].valuta;
-                                }
-                            }
-                        }
+                        $scope.filteredTransactions = 
+                                $scope.position.getTransactionsByType(['BUY', 'SELL']);
+                        $scope.filteredEarnings =
+                                $scope.position.getTransactionsByType('Kupon');
 
-                        // load chart data
-                        var yahooSymbol = yahooService.mapYahoo($scope.symbol);
-                        if (yahooSymbol) {
-                            var endDate = moment().format('YYYY-MM-DD');
-                            var startDate = oldest.format('YYYY-MM-DD');
-                            yahooService.getHistoricalData(yahooSymbol, startDate, endDate).success(function (data) {
-                                var quote = data.query.results.quote;
-                                d3plus.viz()
+                        if ($scope.position.historicalPrices) {
+                            d3plus.viz()
                                         .container("#chart")
-                                        .data(quote)
+                                        .data($scope.position.historicalPrices)
                                         .type("line")
                                         .id("Symbol")
                                         .text("Adj_Close")
@@ -204,9 +138,6 @@ angular.module('portfolioApp.portfolio', [
                                         })
                                         .time("Date")
                                         .draw();
-                            }).error(function (data, status, headers, config) {
-                                console.log('Error: ' + status);
-                            });
                         }
                         
                     }]);

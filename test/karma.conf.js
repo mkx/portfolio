@@ -9,6 +9,8 @@ module.exports = function(config){
       'app/bower_components/angular-resource/angular-resource.js',
       'app/bower_components/angular-animate/angular-animate.js',
       'app/bower_components/angular-mocks/angular-mocks.js',
+      'app/bower_components/big.js/big.min.js',
+      'app/bower_components/moment/min/moment-with-locales.min.js',
       'app/js/**/*.js',
       'test/unit/**/*.js'
     ],
@@ -17,7 +19,7 @@ module.exports = function(config){
 
     frameworks: ['jasmine'],
 
-    browsers : ['Chrome'],
+    browsers : ['Firefox'],
 
     plugins : [
             'karma-chrome-launcher',

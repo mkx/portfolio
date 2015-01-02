@@ -1,17 +1,17 @@
 <div class="page-header">
     <h1>
-        {{position.quote.Name}}
+        {{position.quote.name}}
         <small>
-            {{position.stocks | bigNum}} of {{position.symbol}}
+            {{position.shares | bigNum}} of {{position.symbol}}
         </small>
     </h1>
 </div>
 <div class="row">
     <div class="col-md-4">
-        <p>Value: {{position.value | bigNum:2 }}</p>
-        <p>Current value: {{position.currentValue | bigNum:2 }}</p>
-        <p>Stocks: {{position.stocks | bigNum:4 }}</p>
-        <p>Current price: {{position.lastTradingPrice | bigNum:2}}</p>
+        <p>Costs: {{position.costs | bigNum:2 }}</p>
+        <p>Current market value: {{position.value | bigNum:2 }}</p>
+        <p>Shares: {{position.shares | bigNum:4 }}</p>
+        <p>Current price: {{position.quote.lastPrice | bigNum:2}}</p>
     </div>
     <div class="col-md-2">
         <p class="well">{{position.performance | bigNum:2}}</p>
@@ -36,16 +36,16 @@
             <tbody>
                 <tr ng-repeat="transaction in filteredTransactions">
                     <td>
-                        {{transaction.valuta | momentFromNow }}
+                        {{transaction.dateValuta | momentFromNow }}
                     </td>
                     <td>
-                        {{transaction.stocks | bigNum }}
+                        {{transaction.shares | bigNum }}
                     </td>
                     <td>
                         {{transaction.price | bigNum:2 }}
                     </td>
                     <td>
-                        {{transaction.value | bigNum:2 }}
+                        {{transaction.costs | bigNum:2 }}
                     </td>
                 </tr>
             </tbody>
@@ -63,10 +63,10 @@
             <tbody>
                 <tr ng-repeat="earning in filteredEarnings">
                     <td>
-                        {{earning.valuta | momentFromNow }}
+                        {{earning.dateValuta | momentFromNow }}
                     </td>
                     <td>
-                        {{earning.value | bigNum:2 }}
+                        {{earning.costs | bigNum:2 }}
                     </td>
                 </tr>
             </tbody>

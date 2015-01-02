@@ -8,6 +8,11 @@ function SpreadsheetService($http, $q, gapiService, yahooService, portfolio) {
     };
     
     this.data = sheetData;
+    
+    var isDone = function (data) {
+        return data.worksheetsFound && 
+                (data.worksheetsLoaded === data.worksheetsFound);
+    };
 
     var processWorksheet = function (data) {
         var result = x2js.xml_str2json(data);
@@ -78,6 +83,9 @@ function SpreadsheetService($http, $q, gapiService, yahooService, portfolio) {
             portfolio.addTransaction(transaction);
         }
         sheetData.worksheetsLoaded++;
+        if (isDone(sheetData)) {
+            yahooService.queryYahoo();
+        }
     };
 
     var loadWorksheets = function (data) {
