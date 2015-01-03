@@ -1,38 +1,53 @@
-<div ng-controller="PortfolioCtrl">
-<nav class="navbar navbar-default">
-  <div class="container-fluid">
-    <!-- Brand and toggle get grouped for better mobile display -->
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <a class="navbar-brand" ui-sref="portfolio">Portfolio</a>
-    </div>
+<div id="dashboard-body" ng-controller="PortfolioCtrl">
 
-    <!-- Collect the nav links, forms, and other content for toggling -->
-    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-      <ul class="nav navbar-nav">
-          <li ng-class="{ active: $state.includes('portfolio.positions') }"><a ui-sref="portfolio.positions">All positions</a></li>
-          <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">By symbol <span class="caret"></span></a>
-          <ul class="dropdown-menu" role="menu">
-            <li ng-repeat="position in positions">
-                <a ui-sref="portfolio.position({positionId:position.symbol})">{{position.symbol}}</a>
-            </li>
-            <li class="divider"></li>
-            <li ng-class="{ active: $state.includes('portfolio.transactions') }"><a ui-sref="portfolio.transactions">All transactions</a></li>
-          </ul>
-        </li>
-       </ul>
-    </div><!-- /.navbar-collapse -->
-  </div><!-- /.container-fluid -->
-</nav>
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" ui-sref="portfolio">Portfolio</a>
+            </div>
+            <div id="navbar" class="navbar-collapse collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="#">Dashboard</a></li>
+                    <li><a href="#">Settings</a></li>
+                    <li><a href="#">Profile</a></li>
+                    <li><a href="#">Help</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
 
-<div class="container">
-    <div ui-view>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-3 col-md-2 sidebar">
+                <ul class="nav nav-sidebar">
+                    <li class="active"><a href="#">Overview <span class="sr-only">(current)</span></a></li>
+                    <li><a href="#">Reports</a></li>
+                    <li><a href="#">Analytics</a></li>
+                    <li><a href="#">Export</a></li>
+                  <li ng-class="{ active: $state.includes('portfolio.positions') }">
+                      <a ui-sref="portfolio.positions">All positions</a>
+                  </li>
+                </ul>
+                <ul class="nav nav-sidebar">
+                    <li ng-repeat="position in positions">
+                        <a ui-sref="portfolio.position({positionId:position.symbol})">{{position.symbol}}</a>
+                    </li>
+                </ul>
+                <ul class="nav nav-sidebar">
+                    <li ng-class="{ active: $state.includes('portfolio.transactions') }"><a ui-sref="portfolio.transactions">All transactions</a></li>
+                </ul>
+            </div>
+            <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+                <div ui-view>
+                    <h1 class="page-header">Dashboard</h1>
+
+
         <div class="row">
             <div class="col-md-4">
                 <p>
@@ -70,3 +85,4 @@
     </footer>
 </div>
 </div>
+    </div></div>

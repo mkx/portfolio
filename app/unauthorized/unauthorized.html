@@ -1,8 +1,62 @@
-<div ng-controller="UnauthorizedCtrl">
-    
-    
-    <button ng-click="authorize()">Authorize</button>
-   
+<div id="unauthorized-body" class="container" ng-controller="UnauthorizedCtrl">
+
+    <div class="header">
+        <nav>
+            <ul class="nav nav-pills pull-right">
+                <li role="presentation" class="active"><a href="#">Home</a></li>
+                <li role="presentation"><a ng-click="authorize()">Sign in</a></li>
+                <li role="presentation"><a href="#">Contact</a></li>
+            </ul>
+        </nav>
+        <h3 class="text-muted">Portfolio</h3>
+    </div>
+
+    <div class="jumbotron">
+        <h1>Welcome to this portfolio app!</h1>
+        <p class="lead">This is a pure Web/JavaScript application to monitor
+            performance and other key indicators of your stock portfolio.
+            It uses data stored in your Google Drive.
+        </p>
+        <p><a class="btn btn-lg btn-success"  ng-click="authorize()" role="button">Sign in now</a></p>
+    </div>
+
+    <div class="row marketing">
+        <div class="col-lg-6">
+            <h4>Technologies</h4>
+            <p>This application is written in JavaScript using a suite of
+                available libraries, mainly <a href="https://angularjs.org/">AngularJS</a>
+                and <a href="http://d3js.org/">D3.js</a>.
+            </p>
+
+            <h4>Stock quotes</h4>
+            <p>It uses community provided tables in 
+                <a href="https://developer.yahoo.com/yql/">Yahoo Query Language</a>
+                to check your stock's performance against todays prices.  Please 
+                use responsibly and keep in mind their terms.
+            </p>
+            
+            <h4>Try!</h4>
+            <p>
+                It is easy to run this application.  Just copy this
+                Google Spreadsheet into your Drive and 
+                <a class="btn btn-sm btn-success"  ng-click="authorize()" role="button">Sign in</a>.
+            </p>
+        </div>
+
+        <div class="col-lg-6">
+            <h4>Privacy</h4>
+            <p>It is written with a strong focus on the safety and privacy of
+                your data.  Hence, it does not store any portfolio data.  All
+                you need to do is provide a Google Spreadsheet like this one.</p>
+
+            <h4>Improve!</h4>
+            <p>The source code for this project is hosted on GitHub.  Feel free
+                (as in open source) to modify and improve.</p>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>&copy; <a href="http://michael-krax.de">Michael Krax</a> 2015.  <a href="http://krax.net/impressum">Impressum</a>.</p>
+    </footer>
 
 </div>
- 
