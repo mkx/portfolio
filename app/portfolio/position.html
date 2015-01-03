@@ -10,6 +10,7 @@
     <div class="col-md-4">
         <p>Costs: {{position.costs | bigNum:2 }}</p>
         <p>Current market value: {{position.value | bigNum:2 }}</p>
+        <p>Total earnings: {{position.earnings | bigNum:2 }}</p>
         <p>Shares: {{position.shares | bigNum:4 }}</p>
         <p>Current price: {{position.quote.lastPrice | bigNum:2}}</p>
     </div>
@@ -17,7 +18,8 @@
         <p class="well">{{position.performance | bigNum:2}}</p>
     </div>
     <div class="col-md-6">
-        <div id="chart" style="height: 150px" class="img-responsive">
+        <div style="height: 150px">
+            <chart val="position.chartData" series="Acc. value"></chart>
         </div>
     </div>
 </div>

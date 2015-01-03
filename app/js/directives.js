@@ -1,50 +1,83 @@
 angular.module('portfolioApp')
-        .directive('d3plusvis', function () {
+        .directive('chart', function () {
 
             // constants
-            var margin = 20,
-                    width = 960,
-                    height = 500 - .5 - margin,
+            var 
                     color = d3.interpolateRgb("#f77", "#77f");
 
             return {
                 restrict: 'E',
                 scope: {
-                    val: '='
+                    val: '=',
                 },
                 link: function (scope, element, attrs) {
 
                     // set up initial svg object
                     var vis = d3.select(element[0])
-                            .append("svg")
-                            .attr("width", width)
-                            .attr("height", height + margin + 100);
+                            .append("svg");
+                    
+                    if (!attrs.yvalue) {
+                        attrs.yvalue = 'value';
+                    }
+                    
+                    if (!attrs.type) {
+                        attrs.type = 'line';
+                    }
+                    
+                    vis.selectAll('*').remove();
 
-                    scope.$watch('val', function (newVal, oldVal) {
-
-                        // clear the elements inside of the directive
-                        vis.selectAll('*').remove();
-
-                        // if 'val' is undefined, exit
-                        if (!newVal) {
+                    var chart = c3.generate({
+                        bindto: vis,
+                        data: {
+                            x: 'date',
+                            columns: []
+                        },
+                        axis: {
+                            x: {
+                                type: 'timeseries',
+                                tick: {
+                                    count: 3,
+                                    //culling: {
+                                    //    max: 3
+                                    //},
+                                    fit: true,
+                                    format: '%Y-%m-%d'
+                                }
+                            }
+                        },
+                        legend: {
+                            show: false
+                        },
+                        point: {
+                            show: false
+                        },
+                        padding: {
+                            top: 0,
+                            left: 50,
+                            right: 50,
+                            bottom: 0
+                        },
+                        size: {
+                            width: element.parent().width(),
+                            height: element.parent().height()
+                        }
+                    });
+                    
+                    var redraw = function() {
+                        
+                        if (!scope.val) {
                             return;
                         }
+                        
+                        chart.load({columns: scope.val.filter(function(s) {
+                            return s[0] === 'date' || s[0] === attrs.series;
+                        })});                        
+                    };
 
-                        d3plus.viz()
-                            .container(vis)
-                            .data(newVal)
-                            .type("line")
-                            .id("Symbol")
-                            .text("Symbol")
-                            .y("value")
-                            .x({
-                                grid: false,
-                                value: "Date"
-                            })
-                            .time("Date")
-                            .draw();
-
+                    scope.$watch('val', function (newVal, oldVal) {
+                        redraw();
                     });
+                    
                 }
             };
         });

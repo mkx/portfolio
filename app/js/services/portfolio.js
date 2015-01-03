@@ -44,6 +44,7 @@ function Position(symbol) {
     
     this.shares = Big(0);
     this.costs = Big(0);
+    this.earnings = Big(0);
     this.value = Big(0); // shares * quote.LastTradingPrice
     
     this.oldSymbols = Array();
@@ -73,7 +74,11 @@ function Position(symbol) {
         // insert sorted
         this.insertSorted(transaction);
         this.shares = this.shares.plus(transaction.shares);
-        this.costs = this.costs.plus(transaction.costs);
+        if (transaction.type === 'BUY') {
+            this.costs = this.costs.plus(transaction.costs);
+        } else if (transaction.type === 'Kupon') {
+            this.earnings = this.earnings.plus(transaction.costs);
+        }
         this.recalc();
     };
 
@@ -85,6 +90,7 @@ function Position(symbol) {
     this.updateHistoricalData = function(quotes) {
         this.historicalPrices = quotes;
         this.buildHistoricalData();
+        this.buildChartData();
     };
     
     // returns number of shares hold at date
@@ -108,8 +114,40 @@ function Position(symbol) {
         }
         var result = Big(0);
         this.transactions.forEach(function(t) {
+            if (t.type !== 'BUY') {
+                return;
+            }
             if (t.dateValuta.isBefore(date, 'day') ||
                     t.dateValuta.isSame(date, 'day')) {
+                result = result.plus(t.costs);
+            }
+        });
+        return result;
+    };
+    
+    this.getSharesAt = function(date) {
+        if (!moment.isMoment(date)) {
+            date = moment(date);
+        }
+        var result = Big(0);
+        this.transactions.forEach(function(t) {
+            if (t.dateValuta.isSame(date, 'day')) {
+                result = result.plus(t.shares);
+            }
+        });
+        return result;
+    };
+
+    this.getCostsAt = function(date) {
+        if (!moment.isMoment(date)) {
+            date = moment(date);
+        }
+        var result = Big(0);
+        this.transactions.forEach(function(t) {
+            if (t.type !== 'BUY') {
+                return;
+            }
+            if (t.dateValuta.isSame(date, 'day')) {
                 result = result.plus(t.costs);
             }
         });
@@ -122,13 +160,34 @@ function Position(symbol) {
         this.historicalPrices.forEach(function (q) {
             q.shares = this.getHistoricalShares(q.Date);
             if (q.Adj_Close) {
-                q.value = parseFloat(q.shares.times(q.Adj_Close).toString());
+                q.valueAcc = parseFloat(q.shares.times(q.Adj_Close).toString());
+                var shares = this.getSharesAt(q.Date);
+                q.value = parseFloat(shares.times(q.Adj_Close).toString());
             } else {
+                q.valueAcc = 0.0;
                 q.value = 0.0;
             }
-            q.costs = this.getHistoricalCosts(q.Date);
+            q.costsAcc = this.getHistoricalCosts(q.Date);
+            q.costs = this.getCostsAt(q.Date);
         }, this);
     };
+
+    this.buildChartData = function() {
+        this.chartData = [ ['date'], 
+            ['Value'], ['Costs'], ['Acc. costs'],
+            ['Adj. close'], ['Shares'], ['Acc. value']
+        ];
+        this.historicalPrices.forEach(function(q){
+            this.chartData[0].push(q.Date);
+            this.chartData[1].push(q.value);
+            this.chartData[2].push(q.costs);
+            this.chartData[3].push(q.costsAcc);
+            this.chartData[4].push(q.Adj_Close);
+            this.chartData[5].push(q.shares);
+            this.chartData[6].push(q.valueAcc);
+        }, this);
+    };
+
     
     this.recalc = function() {
         if (this.quote) {
@@ -295,14 +354,35 @@ function Portfolio(currency) {
         }
         this.performance = portfolioCalcPerformance(this.value, this.costs);
         this.costsTotal = this.costs.plus(this.costsWithoutValue);
-        
-        var chartData = new Array();
+        this.calcCharts();
+    };
+    
+    this.calcCharts = function() {
+        var chartData = {};
         this.positions.forEach(function(p){
             if (p.historicalPrices) {
-                chartData = chartData.concat(p.historicalPrices);
+                p.historicalPrices.forEach(function(q){
+                    if (chartData[q.Date]) {
+                        chartData[q.Date].value += q.valueAcc;
+                        chartData[q.Date].costsAcc += q.costsAcc;
+                        chartData[q.Date].costs = chartData[q.Date].costs.plus(q.costs);
+                    } else {
+                        chartData[q.Date] = {
+                                value: q.valueAcc,
+                                costs: q.costs,
+                                costsAcc: q.costsAcc
+                            };
+                    }
+                });
             }
         });
-        this.chartData = chartData;
+        this.chartData = [ ['date'], ['Value'], ['Costs'], ['Acc. costs'] ];
+        Object.keys(chartData).forEach(function(q){
+            this.chartData[0].push(q);
+            this.chartData[1].push(chartData[q].value);
+            this.chartData[2].push(chartData[q].costs.toString());
+            this.chartData[3].push(chartData[q].costsAcc);
+        }, this);
     };
 
 

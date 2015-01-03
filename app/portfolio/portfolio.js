@@ -79,13 +79,16 @@ angular.module('portfolioApp.portfolio', [
                                 return p.performance;
                             }
                         };
+                        $scope.orderByPerfDesc = function(p) {
+                            if (p.performance) {
+                                return -parseFloat(p.performance.toString());
+                            } else {
+                                return p.performance;
+                            }
+                        };
                         
                         spreadsheetService.loadSpreadsheet($rootScope.sheetContentSrc);
                         $scope.sheets = spreadsheetService.data;
-                        
-                        //$scope.chartdata = 'YERER'; //portfolio.chartData;
-                        
-
                         
                    }])
         .controller('PortfolioPositionCtrl',
@@ -121,23 +124,5 @@ angular.module('portfolioApp.portfolio', [
                                 $scope.position.getTransactionsByType(['BUY', 'SELL']);
                         $scope.filteredEarnings =
                                 $scope.position.getTransactionsByType('Kupon');
-
-                        if ($scope.position.historicalPrices) {
-                            d3plus.viz()
-                                        .container("#chart")
-                                        .data($scope.position.historicalPrices)
-                                        .type("line")
-                                        .id("Symbol")
-                                        .text("Adj_Close")
-                                        .y(function(d) {
-                                            return parseFloat(d.Adj_Close);
-                                        })
-                                        .x({
-                                            grid: false,
-                                            value: "Date"
-                                        })
-                                        .time("Date")
-                                        .draw();
-                        }
                         
                     }]);

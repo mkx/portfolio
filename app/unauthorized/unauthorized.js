@@ -20,9 +20,6 @@ angular.module('portfolioApp.unauthorized', [
                         $scope.authorize = function() {
                             gapiService.authorize();
                         };
-                        
-                        $scope.bodyId = 'unauthorized-body';
-
                     }]
                 );
 

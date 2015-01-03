@@ -26,16 +26,13 @@
         <div class="row">
             <div class="col-sm-3 col-md-2 sidebar">
                 <ul class="nav nav-sidebar">
-                    <li class="active"><a href="#">Overview <span class="sr-only">(current)</span></a></li>
-                    <li><a href="#">Reports</a></li>
-                    <li><a href="#">Analytics</a></li>
-                    <li><a href="#">Export</a></li>
-                  <li ng-class="{ active: $state.includes('portfolio.positions') }">
-                      <a ui-sref="portfolio.positions">All positions</a>
-                  </li>
+                    <li class="{ active: $state.includes('portfolio') }"><a ui-sref="portfolio">Overview</a></li>
+                    <li ng-class="{ active: $state.includes('portfolio.positions') }">
+                        <a ui-sref="portfolio.positions">All positions</a>
+                    </li>
                 </ul>
                 <ul class="nav nav-sidebar">
-                    <li ng-repeat="position in positions">
+                    <li ng-repeat="position in positions" ng-class="{ active: $state.includes('portfolio.position({positionId:position.symbol})') }">
                         <a ui-sref="portfolio.position({positionId:position.symbol})">{{position.symbol}}</a>
                     </li>
                 </ul>
@@ -47,42 +44,112 @@
                 <div ui-view>
                     <h1 class="page-header">Dashboard</h1>
 
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-3 dashboard-first-row">
+                            <div>
+                            <chart val="portfolio.chartData" series="Value">
+                            </chart>
+                            </div>
+                            <h4>Market value</h4>
+                            <span class="text-muted">Shows how your portfolio
+                            develops in market value</span>
+                        </div>
 
-        <div class="row">
-            <div class="col-md-4">
-                <p>
-                    Costs: {{portfolio.costs | bigNum:2 }}<br>
-                    <small>Costs of shares without current quote:
-                        {{portfolio.costsWithoutValue | bigNum:2 }}<br>
-                        Total costs: {{portfolio.costsTotal| bigNum:2 }}
-                    </small>
-                </p>
-                <p>Current value: {{portfolio.value | bigNum:2 }}</p>
+                        <div class="col-xs-6 col-sm-3 dashboard-first-row">
+                            <div>
+                                <chart val="portfolio.chartData" series="Costs">
+                                </chart>
+                            </div>
+                            <h4>Costs</h4>
+                            <span class="text-muted">Shows daily spending</span>
+                        </div>
+
+                        <div class="col-xs-6 col-sm-3 dashboard-first-row">
+                        </div>
+
+                        <div class="col-xs-6 col-sm-3 dashboard-first-row">
+                            <p>{{portfolio.performance| bigNum:2}}</p>
+                            <h4>Performance</h4>
+                        </div>
+                    </div>
+
+                    <h2 class="sub-header">Numbers</h2>
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-6">
+                            <h4>Best performing positions</h4>
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Symbol</th>
+            <th>Value</th>
+            <th>Performance</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr ng-repeat="position in positions | orderBy:orderByPerfDesc | limitTo:3">
+            <td>
+                <a ui-sref="portfolio.position({positionId:position.symbol})">{{position.quote.name }}</a>
+            </td>
+            <td>
+                {{position.symbol}}
+            </td>
+            <td>
+                {{position.value | bigNum:2 }}
+            </td>
+            <td>
+                {{position.performance | bigNum:2 }}
+            </td>
+         </tr>
+    </tbody>
+
+
+                                </table>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-sm-6">
+                            <h4>Key data</h4>
+                            <table class="table table-striped">
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            Costs:
+                                        </td>
+                                        <td>
+                                            {{portfolio.costs| bigNum:2 }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Costs of shares without current quote:
+                                        </td>
+                                        <td>
+                                            {{portfolio.costsWithoutValue| bigNum:2 }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Total costs:
+                                        </td>
+                                        <td>{{portfolio.costsTotal| bigNum:2 }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Current value:</td>
+                                        <td>{{portfolio.value| bigNum:2 }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                        
+                    <div>
+                        
+                        <p>{{yahooTriggered}}, {{sheets.worksheetsLoaded}}/{{sheets.worksheetsFound}}</p>
+                    </div>
+                </div>
             </div>
-            <div class="col-md-8">
-                <d3plusvis val="portfolio.chartData">
-                </d3plusvis>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-4 well">
-                <p>{{portfolio.performance | bigNum:2}}</p>
-            </div>
-        </div>
-        
-       
-        <div>
-            <p>{{yahooTriggered}}, {{sheets.worksheetsLoaded}}/{{sheets.worksheetsFound}}</p>
         </div>
     </div>
-    
-    <footer>
-        <p>
-            &copy; Michael Krax.  Using
-            <a href="{{$storage.sheetContentSrc}}">this spreadsheet</a>
-            as source.
-        </p>
-    </footer>
 </div>
-</div>
-    </div></div>
