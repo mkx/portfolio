@@ -6,6 +6,8 @@ This portfolio application (based on AngularJS sample code) combines data
 from a Google Drive spreadsheet and stock quotes obtained via YQL into
 a JavaScript application to monitor a portfolio's performance.
 
+You can test-drive the [sample installation][portfolioApp].
+
 ## Prerequisites
 
 ### Git
@@ -96,3 +98,4 @@ For more information on AngularJS please check out http://angularjs.org/
 [protractor]: https://github.com/angular/protractor
 [jasmine]: http://pivotal.github.com/jasmine/
 [karma]: http://karma-runner.github.io
+[portfolioApp]: http://krax.net/portfolio
