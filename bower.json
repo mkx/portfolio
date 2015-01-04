@@ -1,7 +1,7 @@
 {
-  "name": "angular-phonecat",
-  "description": "A starter project for AngularJS",
-  "version": "0.0.0",
+  "name": "portfolio",
+  "description": "A portfolio application",
+  "version": "0.0.2",
   "homepage": "https://github.com/angular/angular-phonecat",
   "license": "MIT",
   "private": true,

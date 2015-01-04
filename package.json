@@ -1,8 +1,8 @@
 {
-  "version": "0.0.0",
+  "version": "0.0.2",
   "private": true,
-  "name": "angular-phonecat",
-  "description": "A tutorial application for AngularJS",
+  "name": "portfolio",
+  "description": "A portfolio application mostly useful for German so-called 'Sparplaene'",
   "repository": "https://github.com/angular/angular-phonecat",
   "license": "MIT",
   "devDependencies": {

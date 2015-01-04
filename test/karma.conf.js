@@ -4,7 +4,8 @@ module.exports = function(config){
     basePath : '../',
     
     preprocessors: {
-      'app/unauthorized/*.html': ['ng-html2js']
+      'app/unauthorized/*.html': ['ng-html2js'],
+      'app/partials/*.html': ['ng-html2js']
     },
     
     ngHtml2JsPreprocessor: {
@@ -25,6 +26,7 @@ module.exports = function(config){
       'app/bower_components/moment-range/lib/moment-range.min.js',
       'app/bower_components/x2js/xml2json.min.js',
       'app/js/**/*.js',
+      'app/partials/*.html',
       'app/portfolio/*.js',
       'app/unauthorized/*.js',
       'app/unauthorized/*.html',
