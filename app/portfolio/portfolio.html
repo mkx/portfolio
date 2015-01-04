@@ -14,8 +14,8 @@
             <div id="navbar" class="navbar-collapse collapse">
                 <ul class="nav navbar-nav navbar-right">
                     <li><a ui-sref="portfolio">Dashboard</a></li>
+                    <li><a ui-sref="portfolio.positions">All positions</a></li>
                     <li><a ui-sref="sheets">Settings</a></li>
-                    <li><a href="https://github.com/mkx/portfolio">Source</a></li>
                 </ul>
             </div>
         </div>
@@ -44,7 +44,7 @@
                     <h1 class="page-header">Dashboard</h1>
 
                     <div class="row">
-                        <div class="col-xs-6 col-sm-3 dashboard-first-row">
+                        <div class="col-xs-12 col-sm-3 dashboard-first-row">
                             <div>
                             <chart val="portfolio.chartData" series="Value">
                             </chart>
@@ -54,7 +54,7 @@
                             develops in market value</span>
                         </div>
 
-                        <div class="col-xs-6 col-sm-3 dashboard-first-row">
+                        <div class="col-xs-12 col-sm-3 dashboard-first-row">
                             <div>
                                 <chart val="portfolio.chartData" series="Costs">
                                 </chart>
@@ -63,7 +63,7 @@
                             <span class="text-muted">Shows daily spending</span>
                         </div>
 
-                        <div class="col-xs-6 col-sm-3 dashboard-first-row">
+                        <div class="col-xs-12 col-sm-3 dashboard-first-row">
                             <div>
                                 <chart val="portfolio.chartData" series="Performance">
                                 </chart>
@@ -73,7 +73,7 @@
                                 your portfolio's performance</span>
                         </div>
 
-                        <div class="col-xs-6 col-sm-3 dashboard-first-row">
+                        <div class="col-xs-12 col-sm-3 dashboard-first-row">
                             <p>{{portfolio.performance| bigNum:2}}</p>
                             <h4>Performance</h4>
                         </div>
