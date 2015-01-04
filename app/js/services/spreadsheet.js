@@ -97,6 +97,11 @@ function SpreadsheetService($http, $q, gapiService, yahooService, portfolio) {
         for (var i = 0; i < len; i++) {
             // start loading all the worksheets
             var url = worksheets[i].content._src;
+            if (!url) {
+                console.log('could not identify worksheet url');
+                // probably a totally invalid spreadsheet
+                continue;
+            }
             var config = {
                 method: 'JSONP',
                 url: url,
