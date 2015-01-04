@@ -16,21 +16,18 @@ angular.module('portfolioApp')
                     var vis = d3.select(element[0])
                             .append("svg");
                     
-                    if (!attrs.yvalue) {
-                        attrs.yvalue = 'value';
-                    }
-                    
                     if (!attrs.type) {
                         attrs.type = 'line';
                     }
                     
                     vis.selectAll('*').remove();
-
-                    var chart = c3.generate({
+                    
+                    var config = {
                         bindto: vis,
                         data: {
                             x: 'date',
-                            columns: []
+                            columns: [],
+                            type: attrs.type
                         },
                         axis: {
                             x: {
@@ -61,17 +58,30 @@ angular.module('portfolioApp')
                             width: element.parent().width(),
                             height: element.parent().height()
                         }
-                    });
+                    };
+                    
+                    if (attrs.type === 'donut') {
+                        config['donut'] = {
+                            // sample for custom config
+                            title: 'Performance'
+                        };
+                    }
+
+                    var chart = c3.generate(config);
                     
                     var redraw = function() {
                         
                         if (!scope.val) {
                             return;
                         }
-                        
-                        chart.load({columns: scope.val.filter(function(s) {
-                            return s[0] === 'date' || s[0] === attrs.series;
-                        })});                        
+
+                        if (attrs.series) {
+                            chart.load({columns: scope.val.filter(function(s) {
+                                return s[0] === 'date' || s[0] === attrs.series;
+                            })});                        
+                        } else {
+                            chart.load({columns: scope.val});
+                        }
                     };
 
                     scope.$watch('val', function (newVal, oldVal) {

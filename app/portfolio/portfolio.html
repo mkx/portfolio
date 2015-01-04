@@ -68,14 +68,21 @@
                                 <chart val="portfolio.chartData" series="Performance">
                                 </chart>
                             </div>
-                            <h4>Performance</h4>
+                            <h4>Development of performance</h4>
                             <span class="text-muted">Historical development of 
                                 your portfolio's performance</span>
                         </div>
 
                         <div class="col-xs-12 col-sm-3 dashboard-first-row">
-                            <p>{{portfolio.performance| bigNum:2}}</p>
-                            <h4>Performance</h4>
+                            <div>
+                                <chart val="portfolio.performanceChartData"
+                                       type="donut"></chart>
+                            </div>
+                            <h4>Current performance</h4>
+                            <span class="text-muted">Shows the amount of 
+                                positive and negative performing positions.  Overall
+                                gain is {{portfolio.performance| percent:0}}.</span>
+
                         </div>
                     </div>
 

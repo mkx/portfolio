@@ -5,7 +5,7 @@ portfolioCalcPerformance = function(current, base) {
     if (!current || !base || base.cmp(0) === 0) {
         return NaN;
     }
-    return current.minus(base).div(base).times(100);
+    return current.minus(base).div(base);
 };
 
 
@@ -312,6 +312,7 @@ function Portfolio(currency) {
     
     
     this.chartData = Array();
+    this.performanceChartData = Array();
     
     // redirects old symbols to new symbols
     this.symbolMap = {};   
@@ -465,6 +466,14 @@ function Portfolio(currency) {
             this.chartData[2].push(chartData[q].costs.toString());
             this.chartData[3].push(chartData[q].costsAcc);
             this.chartData[4].push(parseFloat(chartData[q].performance.toString()));
+        }, this);
+        
+        this.performanceChartData = [ ['positive'], ['negative'] ];
+        this.positions.forEach(function(p) {
+            if (p.performance) {
+                var index = p.performance.cmp(0) > 0?0:1;
+                this.performanceChartData[index].push(p.value.toString());
+            }
         }, this);
     };
 
