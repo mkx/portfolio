@@ -2,11 +2,11 @@
     <thead>
         <tr>
             <th>Name</th>
-            <th>Symbol</th>
+            <th class="hidden-xs">Symbol</th>
             <th>Shares</th>
-            <th>Costs</th>
+            <th class="hidden-xs">Costs</th>
             <th>Value</th>
-            <th>Price</th>
+            <th class="hidden-xs">Price</th>
             <th>Performance</th>
         </tr>
     </thead>
@@ -15,19 +15,19 @@
             <td>
                 <a ui-sref="portfolio.position({positionId:position.symbol})">{{position.quote.name }}</a>
             </td>
-            <td>
+            <td class="hidden-xs">
                 {{position.symbol}}
             </td>
             <td>
                 {{position.shares | bigNum:4 }}
             </td>
-            <td>
+            <td class="hidden-xs">
                 {{position.costs | bigNum:2 }}
             </td>
             <td>
                 {{position.value | bigNum:2 }}
             </td>
-            <td>
+            <td class="hidden-xs">
                 {{position.quote.lastPrice | bigNum:2 }}
             </td>
             <td>
