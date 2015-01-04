@@ -2,6 +2,15 @@ module.exports = function(config){
   config.set({
 
     basePath : '../',
+    
+    preprocessors: {
+      'app/unauthorized/*.html': ['ng-html2js']
+    },
+    
+    ngHtml2JsPreprocessor: {
+        stripPrefix: 'app/',
+        moduleName: 'portfolioApp.templates'
+    },
 
     files : [
       'app/bower_components/angular/angular.js',
@@ -18,6 +27,7 @@ module.exports = function(config){
       'app/js/**/*.js',
       'app/portfolio/*.js',
       'app/unauthorized/*.js',
+      'app/unauthorized/*.html',
       'app/sheets/*.js',
       'test/unit/**/*.js'
     ],
@@ -31,7 +41,8 @@ module.exports = function(config){
     plugins : [
             'karma-chrome-launcher',
             'karma-firefox-launcher',
-            'karma-jasmine'
+            'karma-jasmine',
+            'karma-ng-html2js-preprocessor'
             ],
 
     junitReporter : {

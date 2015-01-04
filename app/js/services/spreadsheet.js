@@ -136,6 +136,21 @@ function SpreadsheetService($http, $q, gapiService, yahooService, portfolio) {
                     console.log('Error: ' + status);
                 });
     };
+    
+    this.loadSpreadsheets = function () {
+        // load list of all spreadsheets
+        var url = 'https://spreadsheets.google.com/feeds/spreadsheets/private/full';
+        var config = {
+            method: 'JSONP',
+            url: url,
+            params: {
+                v: '3.0',
+                access_token: gapiService.getToken().access_token,
+                callback: 'JSON_CALLBACK'
+            }
+        };
+        return $http(config);
+    };
 }
 
 angular.module('spreadsheetModule', ['gapi']).service('spreadsheetService',
