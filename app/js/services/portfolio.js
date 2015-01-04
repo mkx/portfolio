@@ -46,7 +46,7 @@ function Transaction(rawData) {
     
     this.calcAPY = function(quote) {
         this.APY = Big(0);
-        if (this.type !== 'BUY') {
+        if (this.type !== 'BUY' || this.costs.cmp(0) === 0) {
             return;
         }
         // assuming a year always has 365 days
@@ -54,9 +54,13 @@ function Transaction(rawData) {
         if (duration === 0) {
             return;
         }
-        var currVal = quote.lastPrice.plus(this.totalEarnings);
-        var performance = portfolioCalcPerformance(currVal, this.costs);
-        this.APY = performance.pow(365 / duration);
+        var gain = quote.lastPrice.times(this.shares)
+                .plus(this.totalEarnings)
+                .minus(this.costs);
+        var val = gain.div(this.costs).plus(1);
+        if (val) {
+            this.APY = val.pow(Math.round(365 / duration)).minus(1);
+        }
     };
 }
 
@@ -248,13 +252,17 @@ function Position(symbol) {
     this.recalc = function() {
         if (this.quote) {
             this.value = this.quote.lastPrice.times(this.shares);
-            this.performance = portfolioCalcPerformance(this.value, this.costs);
+            //this.performance = portfolioCalcPerformance(this.value, this.costs);
+            this.APY = Big(0);
             
             // APY for each transaction
             this.transactions.forEach(function(t){
                 t.calcTotalEarnings(this);
                 t.calcAPY(this.quote);
+                this.APY = this.APY.plus(t.shares.div(this.shares).times(t.APY));
             }, this);
+            
+            this.performance = this.APY;
         }
     };
     
@@ -367,7 +375,11 @@ function Portfolio(currency) {
         } else {
             t = new Transaction(transaction);
         }
-        
+
+        if (!t.symbol) {
+            return;
+        }
+
         // check for symbol chg
         if (t.costs.cmp(0) === 0) {
             // sold or bought, but not for money?

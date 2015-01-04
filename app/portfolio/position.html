@@ -15,7 +15,7 @@
         <p>Current price: {{position.quote.lastPrice | bigNum:2}}</p>
     </div>
     <div class="col-md-2">
-        <p class="well">{{position.performance | bigNum:2}}</p>
+        <p class="well">{{position.performance | percent:2}}</p>
     </div>
     <div class="col-md-6">
         <div style="height: 150px">
@@ -50,7 +50,7 @@
                         {{transaction.costs | bigNum:2 }}
                     </td>
                     <td>
-                        {{transaction.APY | bigNum:2 }}
+                        {{transaction.APY | percent:2 }}
                     </td>
                 </tr>
             </tbody>

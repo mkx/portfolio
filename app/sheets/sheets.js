@@ -24,11 +24,6 @@ angular.module('portfolioApp.sheets', [
                 ['$scope', '$state', 'spreadsheetService', '$http', '$localStorage',
                     function ($scope, $state, spreadsheetService, $http, $localStorage) {
                         
-                        if ($localStorage.sheetContentSrc) {
-                            $state.go('portfolio');
-                            return;
-                        }
-                                                
                         // load list of all spreadsheets
                         spreadsheetService.loadSpreadsheets().
                         success(function(data) {
@@ -41,7 +36,7 @@ angular.module('portfolioApp.sheets', [
                         });
                         
                         $scope.setSheetContentSrc = function(sheetId) {
-                            $rootScope.sheetContentSrc = sheetId;
+                            $localStorage.sheetContentSrc = sheetId;
                             $state.go('portfolio');
                         };
                     }]);

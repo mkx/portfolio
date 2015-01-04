@@ -97,7 +97,7 @@ function YahooService($http, portfolio) {
                 var startDate = oldest.format('YYYY-MM-DD');
                 yahooService.getHistoricalData(yahooSymbol, startDate, endDate)
                 .success(function (data) {
-                    if (data.query.results && data.query.results.quote) {
+                    if (data && data.query && data.query.results && data.query.results.quote) {
                         updateHistoricalData(data.query.results.quote, position);
                     }
                 }).error(function (data, status, headers, config) {

@@ -27,6 +27,12 @@ describe('SheetsCtrl', function () {
         $httpBackend.flush();
         expect(scope.sheets.length).toBe(2);
     });
+    
+    it('stores a selected spreadsheet url', function() {
+        var url = 'a url';
+        scope.setSheetContentSrc(url);
+        expect($localStorage.sheetContentSrc).toBe(url);
+    });
 
 });
 

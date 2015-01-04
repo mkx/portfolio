@@ -13,8 +13,8 @@
             </div>
             <div id="navbar" class="navbar-collapse collapse">
                 <ul class="nav navbar-nav navbar-right">
-                    <li><a href="#">Dashboard</a></li>
-                    <li><a href="#">Settings</a></li>
+                    <li><a ui-sref="portfolio">Dashboard</a></li>
+                    <li><a ui-sref="sheets">Settings</a></li>
                     <li><a href="#">Profile</a></li>
                     <li><a href="#">Help</a></li>
                 </ul>
@@ -107,7 +107,7 @@
                 {{position.value | bigNum:2 }}
             </td>
             <td>
-                {{position.performance | bigNum:2 }}
+                {{position.performance | percent:0 }}
             </td>
          </tr>
     </tbody>

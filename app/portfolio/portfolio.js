@@ -39,7 +39,6 @@ angular.module('portfolioApp.portfolio', [
                 [
                     '$scope',
                     '$state',
-                    '$rootScope',
                     '$http',
                     '$localStorage',
                     '$interval',
@@ -47,26 +46,16 @@ angular.module('portfolioApp.portfolio', [
                     'gapiService',
                     'yahooService',
                     'spreadsheetService',
-                    function ($scope, $state, $rootScope, $http, $localStorage,
+                    function ($scope, $state, $http, $localStorage,
                         $interval,
                         portfolio, gapiService, yahooService, spreadsheetService) {
-                        /*if (!gapiService.getToken()) {
-                            $state.go('unauthorized');
-                            return;
-                        }*/
                         
                         $scope.$storage = $localStorage;
                         
                         // check if we already know about a sheet url
-                        if (!$rootScope.sheetContentSrc) {
-                            if ($scope.$storage.sheetContentSrc) {
-                                $rootScope.sheetContentSrc = $scope.$storage.sheetContentSrc;
-                            } else {
-                                $state.go('sheets');
-                                return;
-                            }
-                        } else {
-                            $scope.$storage.sheetContentSrc = $rootScope.sheetContentSrc;
+                        if (!$scope.$storage.sheetContentSrc) {
+                            $state.go('sheets');
+                            return;
                         }
                         
                         $scope.positions = portfolio.getPositions();
@@ -87,7 +76,7 @@ angular.module('portfolioApp.portfolio', [
                             }
                         };
                         
-                        spreadsheetService.loadSpreadsheet($rootScope.sheetContentSrc);
+                        spreadsheetService.loadSpreadsheet($scope.$storage.sheetContentSrc);
                         $scope.sheets = spreadsheetService.data;
                         
                    }])

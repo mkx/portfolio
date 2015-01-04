@@ -50,12 +50,16 @@ describe('PortfolioCtrl', function(){
     }));
     
     it('should load a spreadsheet', inject(function ($controller, $rootScope) {
+        // this triggers quite some requests
+        // basically mock a full data set 
         expect(scope.sheets.loading).toBeTruthy();
         $httpBackend.flush();
         expect(scope.sheets.loading).toBeFalsy();
         expect(scope.sheets.worksheetsFound).toBe(3);
         expect(scope.sheets.worksheetsLoaded).toBe(3);
-        expect(scope.positions.length).toBe(1);
+        // there is one symbol in the fake date
+        // and one undefined that only exists in yahoo reply
+        expect(scope.positions.length).toBe(2);
         $httpBackend.verifyNoOutstandingExpectation();
         $httpBackend.verifyNoOutstandingRequest();
     }));

@@ -31,4 +31,16 @@ angular.module('portfolioApp')
                 }
                 return input;
             };
+})
+        .filter('percent', function() {
+            return function(input, precision) {
+                if (input === undefined) {
+                    return '';
+                }
+                if (input instanceof Big) {
+                    return input.times(100).toFixed(precision) + ' %';
+                } else {
+                    return (input * 100).toString() + ' %';
+                }
+            };
 });
