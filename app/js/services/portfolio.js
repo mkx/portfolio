@@ -22,6 +22,42 @@ function Transaction(rawData) {
     this.currency = rawData.currency;
         
     this.type = rawData.type;
+
+    /* APY = (principal + gain/principal) ^ (365/days) */
+    this.APY;
+    /* what's this transaction's share of earnings */
+    this.totalEarnings = Big(0);
+    
+    this.calcTotalEarnings = function(position) {
+        this.totalEarnings = Big(0);
+        if (this.type !== 'BUY') {
+            return;
+        }
+        position.transactions.forEach(function(t){
+            if (t.type === 'Kupon' && t.dateValuta.isAfter(this.dateValuta, 'day')) {
+                // assuming that the price @ buy is factoring in expected
+                // earnings
+                var sharesAtE = position.getHistoricalShares(t.dateValuta);
+                var earningShare = this.shares.div(sharesAtE).times(t.costs);
+                this.totalEarnings = this.totalEarnings.plus(earningShare);
+            }
+        }, this);
+    };
+    
+    this.calcAPY = function(quote) {
+        this.APY = Big(0);
+        if (this.type !== 'BUY') {
+            return;
+        }
+        // assuming a year always has 365 days
+        var duration = moment.range(this.dateValuta, moment()).diff('days');
+        if (duration === 0) {
+            return;
+        }
+        var currVal = quote.lastPrice.plus(this.totalEarnings);
+        var performance = portfolioCalcPerformance(currVal, this.costs);
+        this.APY = performance.pow(365 / duration);
+    };
 }
 
 function Quote(quote) {
@@ -125,6 +161,23 @@ function Position(symbol) {
         return result;
     };
     
+    this.getHistoricalEarnings = function(date) {
+        if (!moment.isMoment(date)) {
+            date = moment(date);
+        }
+        var result = Big(0);
+        this.transactions.forEach(function(t) {
+            if (t.type !== 'Kupon') {
+                return;
+            }
+            if (t.dateValuta.isBefore(date, 'day') ||
+                    t.dateValuta.isSame(date, 'day')) {
+                result = result.plus(t.costs);
+            }
+        });
+        return result;
+    };
+    
     this.getSharesAt = function(date) {
         if (!moment.isMoment(date)) {
             date = moment(date);
@@ -169,13 +222,15 @@ function Position(symbol) {
             }
             q.costsAcc = this.getHistoricalCosts(q.Date);
             q.costs = this.getCostsAt(q.Date);
+            q.earnings = this.getHistoricalEarnings(q.Date);
         }, this);
     };
 
     this.buildChartData = function() {
         this.chartData = [ ['date'], 
             ['Value'], ['Costs'], ['Acc. costs'],
-            ['Adj. close'], ['Shares'], ['Acc. value']
+            ['Adj. close'], ['Shares'], ['Acc. value'],
+            ['Earnings']
         ];
         this.historicalPrices.forEach(function(q){
             this.chartData[0].push(q.Date);
@@ -185,6 +240,7 @@ function Position(symbol) {
             this.chartData[4].push(q.Adj_Close);
             this.chartData[5].push(q.shares);
             this.chartData[6].push(q.valueAcc);
+            this.chartData[7].push(q.earnings);
         }, this);
     };
 
@@ -193,6 +249,12 @@ function Position(symbol) {
         if (this.quote) {
             this.value = this.quote.lastPrice.times(this.shares);
             this.performance = portfolioCalcPerformance(this.value, this.costs);
+            
+            // APY for each transaction
+            this.transactions.forEach(function(t){
+                t.calcTotalEarnings(this);
+                t.calcAPY(this.quote);
+            }, this);
         }
     };
     
@@ -366,22 +428,31 @@ function Portfolio(currency) {
                         chartData[q.Date].value += q.valueAcc;
                         chartData[q.Date].costsAcc += q.costsAcc;
                         chartData[q.Date].costs = chartData[q.Date].costs.plus(q.costs);
+                        chartData[q.Date].earnings = chartData[q.Date].earnings.plus(q.earnings);
                     } else {
                         chartData[q.Date] = {
                                 value: q.valueAcc,
                                 costs: q.costs,
-                                costsAcc: q.costsAcc
+                                costsAcc: q.costsAcc,
+                                earnings: q.earnings,
                             };
                     }
+                    chartData[q.Date].performance =
+                            portfolioCalcPerformance(
+                                    Big(chartData[q.Date].value).plus(chartData[q.Date].earnings),
+                                    chartData[q.Date].costs
+                                    );
                 });
             }
         });
-        this.chartData = [ ['date'], ['Value'], ['Costs'], ['Acc. costs'] ];
+        this.chartData = [ ['date'], ['Value'], ['Costs'],
+            ['Acc. costs'], ['Performance'] ];
         Object.keys(chartData).forEach(function(q){
             this.chartData[0].push(q);
             this.chartData[1].push(chartData[q].value);
             this.chartData[2].push(chartData[q].costs.toString());
             this.chartData[3].push(chartData[q].costsAcc);
+            this.chartData[4].push(parseFloat(chartData[q].performance.toString()));
         }, this);
     };
 

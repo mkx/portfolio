@@ -25,8 +25,8 @@
 </div>
 <div class="row">
     <div class="col-md-8">
+        <h4>Transactions</h4>
         <table class="table table-condensed table-striped">
-            <caption>Transactions</caption>
             <thead>
                 <tr>
                     <th>Date</th>
@@ -49,13 +49,16 @@
                     <td>
                         {{transaction.costs | bigNum:2 }}
                     </td>
+                    <td>
+                        {{transaction.APY | bigNum:2 }}
+                    </td>
                 </tr>
             </tbody>
         </table>
     </div>
     <div class="col-md-4">
+        <h4>Earnings</h4>
         <table class="table table-condensed table-striped">
-            <caption>Earnings</caption>
             <thead>
                 <tr>
                     <th>Date</th>
