@@ -54,7 +54,7 @@
                             develops in market value</span>
                         </div>
 
-                        <div class="col-xs-12 col-sm-3 dashboard-first-row">
+                        <div class="col-xs-12 col-sm-3 dashboard-first-row hidden-xs">
                             <div>
                                 <chart val="portfolio.chartData" series="Costs">
                                 </chart>
@@ -63,7 +63,7 @@
                             <span class="text-muted">Shows daily spending</span>
                         </div>
 
-                        <div class="col-xs-12 col-sm-3 dashboard-first-row">
+                        <div class="col-xs-12 col-sm-3 dashboard-first-row hidden-xs">
                             <div>
                                 <chart val="portfolio.chartData" series="Performance">
                                 </chart>
@@ -73,7 +73,7 @@
                                 your portfolio's performance</span>
                         </div>
 
-                        <div class="col-xs-12 col-sm-3 dashboard-first-row">
+                        <div class="col-xs-12 col-sm-3 dashboard-first-row hidden-xs">
                             <div>
                                 <chart val="portfolio.performanceChartData"
                                        type="donut"></chart>
@@ -97,7 +97,7 @@
         <tr>
             <th>Name</th>
             <th>Symbol</th>
-            <th>Value</th>
+            <th class="hidden-xs">Value</th>
             <th>Performance</th>
         </tr>
     </thead>
@@ -109,7 +109,7 @@
             <td>
                 {{position.symbol}}
             </td>
-            <td>
+            <td class="hidden-xs">
                 {{position.value | bigNum:2 }}
             </td>
             <td>

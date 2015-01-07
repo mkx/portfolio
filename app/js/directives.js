@@ -25,7 +25,6 @@ angular.module('portfolioApp')
                     var config = {
                         bindto: vis,
                         data: {
-                            x: 'date',
                             columns: [],
                             type: attrs.type
                         },
@@ -59,7 +58,10 @@ angular.module('portfolioApp')
                             height: element.parent().height()
                         }
                     };
-                    
+
+                    if (attrs.type === 'line') {
+                        config.data.x = 'date';
+                    }
                     if (attrs.type === 'donut') {
                         config['donut'] = {
                             // sample for custom config
@@ -76,8 +78,9 @@ angular.module('portfolioApp')
                         }
 
                         if (attrs.series) {
+                            var series = attrs.series.split(',');
                             chart.load({columns: scope.val.filter(function(s) {
-                                return s[0] === 'date' || s[0] === attrs.series;
+                                return s[0] === 'date' || series.indexOf(s[0]) !== -1;
                             })});                        
                         } else {
                             chart.load({columns: scope.val});

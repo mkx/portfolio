@@ -472,7 +472,7 @@ function Portfolio(currency) {
         this.positions.forEach(function(p) {
             if (p.performance) {
                 var index = p.performance.cmp(0) > 0?0:1;
-                this.performanceChartData[index].push(p.value.toString());
+                this.performanceChartData[index].push(parseFloat(p.value.toString()));
             }
         }, this);
     };
