@@ -55,8 +55,7 @@ function YahooService($http, portfolio) {
     };
     
     var updateHistoricalData = function(quotes, position) {
-        position.updateHistoricalData(quotes);
-        portfolio.recalc();
+        portfolio.updateHistoricalData(position, quotes);
     };
 
     this.queryYahoo = function () {

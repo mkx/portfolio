@@ -79,6 +79,30 @@ angular.module('portfolioApp.portfolio', [
                         spreadsheetService.loadSpreadsheet($scope.$storage.sheetContentSrc);
                         $scope.sheets = spreadsheetService.data;
                         
+                        
+                        // start update interval
+                        var updatePortfolio;
+                        
+                        $scope.startUpdatePortfolio = function () {
+                            if (angular.isDefined(updatePortfolio)) return;
+                            updatePortfolio = $interval(function() {
+                                portfolio.recalc();
+                            }, 1000);
+                        }
+                        
+                        $scope.stopUpdatePortfolio = function() {
+                            if (angular.isDefined(updatePortfolio)) {
+                                $interval.cancel(updatePortfolio);
+                                updatePortfolio = undefined;
+                            }  
+                        };
+                        
+                        $scope.$on('destroy', function() {
+                           $scope.stopUpdatePortfolio();
+                        });
+                        
+                        $scope.startUpdatePortfolio();
+                        
                    }])
         .controller('PortfolioPositionCtrl',
                 [

@@ -89,6 +89,8 @@ function Position(symbol) {
     
     this.oldSymbols = Array();
     
+    this.changed = false;
+    
     // sort by valuta (date) desc
     this.insertSorted = function(transaction) {
         var len = this.transactions.length;
@@ -119,12 +121,12 @@ function Position(symbol) {
         } else if (transaction.type === 'Kupon') {
             this.earnings = this.earnings.plus(transaction.costs);
         }
-        this.recalc();
+        this.changed = true;
     };
 
     this.updateQuoteYahoo = function(quote) {
         this.quote = new Quote(quote);
-        this.recalc();
+        this.changed = true;
     };
     
     this.updateHistoricalData = function(quotes) {
@@ -250,6 +252,7 @@ function Position(symbol) {
 
     
     this.recalc = function() {
+        if (!this.changed) return;
         if (this.quote) {
             this.value = this.quote.lastPrice.times(this.shares);
             //this.performance = portfolioCalcPerformance(this.value, this.costs);
@@ -264,6 +267,7 @@ function Position(symbol) {
             
             this.performance = this.APY;
         }
+        this.changed = false;
     };
     
     this.getTransactionsByType = function(types) {
@@ -313,6 +317,8 @@ function Portfolio(currency) {
     
     this.chartData = Array();
     this.performanceChartData = Array();
+    
+    this.changed = false;
     
     // redirects old symbols to new symbols
     this.symbolMap = {};   
@@ -366,6 +372,7 @@ function Portfolio(currency) {
             this.deletePosition(oldSymbol);
         }
         this.symbolMap[oldSymbol] = newSymbol;
+        // this.changed = true; only called by addTransaction
     };
     
     // find position and add transaction there
@@ -397,13 +404,18 @@ function Portfolio(currency) {
 
         var position = this.findOrCreatePosition(t.symbol);
         position.addTransaction(t);
-        this.recalc();
+        this.changed = true;
     };
 
     this.updateQuoteYahoo = function (symbol, quote) {
         var position = this.findOrCreatePosition(symbol);
         position.updateQuoteYahoo(quote);
-        this.recalc();
+        this.changed = true;
+    };
+    
+    this.updateHistoricalData = function(position, quotes) {
+        position.updateHistoricalData(quotes);
+        this.changed = true;
     };
 
     this.getSymbols = function() {
@@ -415,6 +427,11 @@ function Portfolio(currency) {
     };
     
     this.recalc = function () {
+        if (!this.changed) {
+            return;
+        }
+        this.positions.forEach(function(p) { p.recalc(); });
+        
         this.costs = Big(0);
         this.value = Big(0);
         this.costsWithoutValue = Big(0);
@@ -430,6 +447,7 @@ function Portfolio(currency) {
         this.performance = portfolioCalcPerformance(this.value, this.costs);
         this.costsTotal = this.costs.plus(this.costsWithoutValue);
         this.calcCharts();
+        this.changed = false;
     };
     
     this.calcCharts = function() {
@@ -447,7 +465,7 @@ function Portfolio(currency) {
                                 value: q.valueAcc,
                                 costs: q.costs,
                                 costsAcc: q.costsAcc,
-                                earnings: q.earnings,
+                                earnings: q.earnings
                             };
                     }
                     chartData[q.Date].performance =
