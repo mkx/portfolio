@@ -188,29 +188,27 @@ function Position(symbol) {
         if (!moment.isMoment(date)) {
             date = moment(date);
         }
-        var result = Big(0);
-        this.transactions.forEach(function(t) {
+        return this.transactions.forEach(function(prev, t) {
             if (t.dateValuta.isSame(date, 'day')) {
-                result = result.plus(t.shares);
+                return prev.plus(t.shares);
             }
-        });
-        return result;
+            return prev;
+        }, Big(0));
     };
 
     this.getCostsAt = function(date) {
         if (!moment.isMoment(date)) {
             date = moment(date);
         }
-        var result = Big(0);
-        this.transactions.forEach(function(t) {
+        return this.transactions.reduce(function(prev, t) {
             if (t.type !== 'BUY') {
-                return;
+                return prev;
             }
             if (t.dateValuta.isSame(date, 'day')) {
-                result = result.plus(t.costs);
+                return prev.plus(t.costs);
             }
-        });
-        return result;
+            return prev;
+        }, Big(0));
     };
     
     // build an array of accumulated costs 
