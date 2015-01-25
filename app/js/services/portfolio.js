@@ -188,7 +188,7 @@ function Position(symbol) {
         if (!moment.isMoment(date)) {
             date = moment(date);
         }
-        return this.transactions.forEach(function(prev, t) {
+        return this.transactions.reduce(function(prev, t) {
             if (t.dateValuta.isSame(date, 'day')) {
                 return prev.plus(t.shares);
             }
